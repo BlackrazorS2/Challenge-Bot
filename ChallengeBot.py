@@ -1,14 +1,17 @@
 import discord
 from discord.ext import commands
 import datetime
+import operator
 
-TOKEN = TOKEN # Token
+TOKEN = 'TOKEN'# Token
 
 client = commands.Bot(command_prefix='>>') # command is >>
 client.remove_command('help')
 
+
 @client.event
 async def on_ready():
+    await client.change_presence(activity=discord.Game(name='>>help'))
     print('ready boss!')
 
 @client.command()
@@ -18,7 +21,7 @@ async def createChallenge(ctx, answer, num, first, second, third, base):
         ID = str(ctx.message.author.id)
         channel = str(ctx.message.channel) # channel message was sent from, used for checking if it was sent from a direct message
         if channel == ("Direct Message with %s" % (sender)):  # if the command was sent from a DM:
-            if ID == 'add authorized users id here': 
+            if ID == 'Authorized user ID here':
                 await ctx.send("You're an authorized user!")
                 # initialization of challenge files: The answer file, the point framework file, and the completed list file
                 challenge_file = open("Challenge_"+ str(num) + '.txt', "w+") # answer file
@@ -46,6 +49,8 @@ async def challenge(ctx, num, answer):  # This is the command for submitting a f
         if channel == ("Direct Message with %s" % (sender)):  # if the command was sent from a DM:
             challenge_file = open('Challenge_' + str(num) + '.txt', 'r+')  # open the file that contains the correct flag for the given challenge
             challenge = challenge_file.readlines() # read the file
+            flag = challenge[0]
+            flag = flag.strip('\n')
             if answer == challenge[0]: # if the given answer is the same as the challenge answer:
                 challenge_file.close() # close the file
                 completed_list = open("Challenge_" + str(num) + '_' +'completed.txt', 'r+' ) # open the list of people who already completed that challenge
@@ -68,14 +73,16 @@ async def challenge(ctx, num, answer):  # This is the command for submitting a f
                     
                     # code to add points
                     point_File = open('Points.txt', "r") # open the global points file
-                    # format should be: username#numbers,points
+                    # format should be: ID,points
                     points_List = [] # a list of all people's point scores that were in the file
                     for line in point_File: # for each line in the point file
+                        line = line.strip('\n')
                         points_List.append(line) # add each line to the list
                     
                     point_File.close() 
 
                     found = False
+                    point_loc = 0
                     for item in points_List: # find the sender of the flag in the list
                         user_points = item.find(ID) # the .find function returns the index of the given string. If the string is not found, it returns -1
                         if user_points != -1: # if the sender's name is found in the item:
@@ -96,10 +103,10 @@ async def challenge(ctx, num, answer):  # This is the command for submitting a f
                                 await ctx.send("Your current points: " + str(points)) # tell user what their current point total is
                                 
                                 # writing the point total back in the file
-                                points_List[user_points] = ID + "," + str(points) # overwriting the item in the list where the old point total is with the new point total
+                                points_List[point_loc] = (ID + "," + str(points)) # overwriting the item in the list where the old point total is with the new point total
                                 point_File = open('Points.txt', "w") # open the global points file in write mode
                                 for score in points_List: # essentially overwritting the entire file with the scores over again. Jank I know
-                                    point_File.write(score)
+                                    point_File.write(score + '\n')
                                 point_File.close()
                         
                             elif len(completed) == 1: # if the file with a list of users who already completed is only one...
@@ -108,10 +115,10 @@ async def challenge(ctx, num, answer):  # This is the command for submitting a f
                                 await ctx.send("Your current points: " + str(points)) # tell user what their current point total is
                                 
                                 # writing the point total back in the file
-                                points_List[user_points] = ID + "," + str(points) # overwriting the item in the list where the old point total is with the new point total
+                                points_List[point_loc] = (ID + "," + str(points)) # overwriting the item in the list where the old point total is with the new point total
                                 point_File = open('Points.txt', "w") # open the global points file in write mode
                                 for score in points_List: # essentially overwritting the entire file with the scores over again. Jank I know
-                                    point_File.write(score)
+                                    point_File.write(score + '\n')
                                 point_File.close()
             
                             elif len(completed) == 2: # if the file with a list of users who already completed is two...
@@ -120,10 +127,10 @@ async def challenge(ctx, num, answer):  # This is the command for submitting a f
                                 await ctx.send("Your current points: " + str(points)) # tell user what their current point total is
                                 
                                 # writing the point total back in the file
-                                points_List[user_points] = ID + "," + str(points) # overwriting the item in the list where the old point total is with the new point total
+                                points_List[point_loc] = (ID + "," + str(points)) # overwriting the item in the list where the old point total is with the new point total
                                 point_File = open('Points.txt', "w") # open the global points file in write mode
                                 for score in points_List: # essentially overwritting the entire file with the scores over again. Jank I know
-                                    point_File.write(score)
+                                    point_File.write(score + '\n')
                                 point_File.close()
                             else:
                                 await ctx.send("You answered! +" + str(frame[3] + " points!"))
@@ -131,15 +138,16 @@ async def challenge(ctx, num, answer):  # This is the command for submitting a f
                                 await ctx.send("Your current points: " + str(points)) # tell user what their current point total is
                                 
                                 # writing the point total back in the file
-                                points_List[user_points] = ID + "," + str(points) # overwriting the item in the list where the old point total is with the new point total
+                                points_List[point_loc] = (ID + "," + str(points)) # overwriting the item in the list where the old point total is with the new point total
                                 point_File = open('Points.txt', "w") # open the global points file in write mode
                                 for score in points_List: # essentially overwritting the entire file with the scores over again. Jank I know
-                                    point_File.write(score)
+                                    point_File.write(score + '\n')
                                 point_File.close()
                         
 
                         else:
-                            continue
+                            pass
+                        point_loc += 1
 
                     if found == False: # if user's name is not found in the file...
                         guide = open("Challenge_" + str(num)+ "_pointBase.txt", 'r') # point framework file
@@ -188,28 +196,44 @@ async def challenge(ctx, num, answer):  # This is the command for submitting a f
             await ctx.send("This is not in a direct message! Please submit flags via direct message.")
     except:
         await ctx.send("An error occured, were your arguments correct?")
+
+@client.command()
+async def info(ctx, challenge): # gives info about a challenge such as point bonuses
+    try:
+        disp = []
+        with open("Challenge_" + str(challenge)+ "_pointBase.txt") as file:
+            for line in file:
+                line = line.strip('\n')
+                disp.append(line)
+        messsage = ("```Point framework for challenge " + str(challenge) + '\n' + "1st: " + disp[0] + "\n" + "2nd: " + disp[1] + "\n" + "3rd: " + disp[2] + '\n' + "Base: " + disp[3] + "```")
+        await ctx.send(messsage)
+    except:
+        await ctx.send("An error occured, likely because the challenge does not exist.")
 @client.command()
 async def leaderboard(ctx):
     try:
-        channel = client.get_channel(leaderboard_channel_id)
-        base_string = ''
-        scores_dict = {}
+        channel = client.get_channel(leaderboard_channel_id) # gets the channel of wherever you want the leaderboard to be in
+        base_string = '' # string that the leaderboard will get added to
+        scores_dict = {} # dictionary that will hold the scores
         with open('Points.txt', "r") as points:
-            for score in points:
-                seperate = score.find(',')
+            for score in points: # for each score in the file
+                # seperate the score out
+                seperate = score.find(',') 
                 username = score[0:(seperate)]
+
                 name = ctx.guild.get_member(int(username)).nick # class context.guild function get_member returns a member object which has attribute nick
-                total = score[seperate+1:]
+                total = score[seperate+1:] # get the raw score and strip EOL char
                 total = total.strip('\n')
-                scores_dict[username] = total
-            sorted_scores = sorted(scores_dict.items(), key=lambda kv: kv[1])
-            for pair in sorted_scores:
-                name = pair[0]
-                score = pair[1]
-                base_string = base_string + str(name) + ": " + str(score) + '\n'
-            #for key, value in scores_dict.items():    # fix this because the above returns a list of tuples
-            #    base_string = base_string + str(key) + ": " + str(value) + '\n'
-            await channel.send("```Score Update!" + "\n" + base_string + "```")
+
+                scores_dict[name] = total # add the name and scores to a dictionary, with the names as keys and their score as values
+            sorted_scores = sorted(scores_dict.items(), key=lambda x: x[1], reverse=True) # use the sorted method to sort the dictionary into a list of tuples in desceding order
+            order = 1
+            for pair in sorted_scores: # for each tuple in the list of tuples
+                name = pair[0] # grab the name
+                score = pair[1] # grab the name's corresponding score
+                base_string = base_string + str(order) + ". " + str(name) + ": " + str(score) + '\n' # add those to the base string
+                order += 1
+            await channel.send("```Score Update!" + "\n" + base_string + "```") # send the entire leaderboard as one string
     except:
         await ctx.send("An error occured while posting the leaderboard. This is most likely because the leaderboard is empty. Enter some scores!")
 
@@ -221,6 +245,8 @@ async def help(ctx):
                         ' ' + '\n' + \
                     '>>leaderboard - pulls up the leaderboard. Note this is also in the #leaderboard channel which updates every submission.' + '\n' + \
                         ' ' + '\n' +\
+                    ">>info [challenge number] - displays the point framework for that challenge (i.e what first, second, third, and everyone else get)" + '\n' + \
+                        ' ' + '\n' + \
                     '>>help - brings up this menu!```')
 
 client.run(TOKEN)
