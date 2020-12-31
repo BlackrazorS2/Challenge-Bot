@@ -461,25 +461,29 @@ async def patchNotes(ctx):
 async def help(ctx): 
     """lists all the commands and their arguments for users"""
     try:
-        helpString = ("```css" + '\n' + ">>createCategory [name] - creates a new category in which challenges can be stored" + '\n' + \
+        helpString = ("" + '\n' + ">>createCategory <name> - creates a new category in which challenges can be stored" + '\n' + \
             ' ' + '\n' +\
-        ">>createChallenge [category] [answer] [num] [first] [second] [third] [base] - creates challenges in a given category. If you're not authorized, you can't use this" + '\n' + \
+        ">>createChallenge <category> <answer> <num> <first> <second> <third> <base> - creates challenges in a given category. If you're not authorized, you can't use this" + '\n' + \
             ' ' + '\n' +\
-        '>>challenge [category] [challenge num] [flag] - Submits an answer to a challenge. Requires the challenge number which was included with the original posting of it.' + '\n' +\
+        '>>challenge <category> <challenge num> <flag> - Submits an answer to a challenge. Requires the challenge number which was included with the original posting of it.' + '\n' +\
             ' ' + '\n' + \
         '>>cat - lists all available categories and the number of challenges in each of them.' + '\n' + \
             ' ' + '\n' + \
-        '>>leaderboard [category] - pulls up the leaderboard in a given category. Note this is different than the leaderboard that passively updates' + '\n' + \
+        '>>leaderboard <category> - pulls up the leaderboard in a given category. Note this is different than the leaderboard that passively updates' + '\n' + \
             ' ' + '\n' +\
-        ">>info [category] [challenge number] - displays the point framework for that challenge (.i.e what first, second, third, and everyone else get)" + '\n' + \
+        ">>info <category> <challenge number> - displays the point framework for that challenge (.i.e what first, second, third, and everyone else get)" + '\n' + \
             ' ' + '\n' + \
-        ">>completions [category] [challenge number] - displays the people who have completed a given challenge. This should only be used in server." + '\n' + \
+        ">>completions <category> <challenge number> - displays the people who have completed a given challenge. This should only be used in server." + '\n' + \
             ' ' + '\n' + \
-        ">>patch notes - displays patch notes. Currently holds nothing." + '\n' + \
+        ">>patchnotes - displays patch notes. Currently holds nothing." + '\n' + \
             ' ' + '\n' + \
-        ">>stats [mention] - displays stats for a given user, currently does not work." + '\n' + \
+        ">>stats >mention> - displays stats for a given user, currently does not work." + '\n' + \
             ' ' + '\n' + \
-        '>>help - brings up this menu!```')
+        ">>startBoard [refreshtime] - starts the passive leaderboard refreshing after a given time. Defaults to 10 seconds\n" + \
+            ' ' + '\n' + \
+        ">>stopBoard - stops the passive leaderboard\n" + \
+            ' ' + '\n' + \
+        '>>help - brings up this menu!')
         emb = discord.Embed(description=helpString, color=0x39e600)
         emb.set_author(name="Help Menu!", icon_url="https://cdn.discordapp.com/avatars/626721881117949962/d8d4afa0652a2fc80fe7763a5314844a.webp?size=128")
         await ctx.send(embed=emb)
