@@ -6,9 +6,9 @@ import os
 import datetime
 
 ################################################################################
-#                        Challenge Bot Version 4.0.0                           #
+#                        Challenge Bot Version 4.0.1                           #
 #                                                                              #
-# Last Updated: 10/8/2020                                                      #
+# Last Updated: 12/30/2020                                                      #
 # Description: Discord bot that hosts and scores inputed challenges and        #
 # displays those scores in a leaderboard on a given channel on a server        #
 #                                                                              #
@@ -20,6 +20,7 @@ import datetime
 # should really be in a class
 TOKEN = 'TOKEN'# Token for the bot, required to run it. To get the token, create an application with the discord website
 passive_channel = None
+global time
 time = 10 # time passive leaderboard waits before refreshing
 
 intents = discord.Intents.default()
@@ -123,7 +124,7 @@ async def challenge(ctx, category, name, answer): # fuction allows user to submi
                 with open(f"categories/{category}/{name}.json", 'r+') as f: # open the json file for that challenge
                     data = json.load(f) # load the json object into a python object
                 completed_previously = False # assume that the user has not completed the challenge before
-                answer_right = False # assume that the answer the user has given is false
+                #answer_right = False # assume that the answer the user has given is false
                 for completor in data['complete']: # iterate over the users listed to have completed the challenge already
                     if completor == id: # if the id of the user matches the id of a user in the list
                         completed_previously = True # note that the user has completed the challenge previously
@@ -173,7 +174,7 @@ async def challenge(ctx, category, name, answer): # fuction allows user to submi
         await ctx.send("An error has occured, check you arguments and try again. :(") # notify user
 
 @client.command()
-async def startBoard(ctx, refreshtime=time):
+async def startBoard(ctx, refreshtime=10):
     """Turns on the passive leaderboard in the channel the command was sent in, can only be used by admins"""
     id = str(ctx.message.author.id) # defines the id of the sender
     if adminCheck(id):
