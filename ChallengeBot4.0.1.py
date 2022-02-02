@@ -30,7 +30,7 @@ client.remove_command('help') # removes the default help command to replace it w
 
 def adminCheck(id):
     """Checks if a given user is an admin"""
-    if id == '381651675578105856' or id == "223580587255005184" or id == "334140752831447040" or id == "183724179361628163": # check if command sender was an admin    
+    if id == 'admin1' or id == "admin2" or id == "admin3" or id == "admin4": # check if command sender was an admin    
         return True
     else:
         return False
